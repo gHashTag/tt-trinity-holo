@@ -224,3 +224,65 @@ path, consistent with the 250 MHz clock target (W15a STA).
 ```
 
 **Author**: Vasilev Dmitrii \<admin@t27.ai\>
+
+---
+
+## L-DPC24 Lane A' — holo-noc-1cycle inter-die NoC (P4 falsification)
+
+**Issue**: [trinity-fpga#99](https://github.com/gHashTag/trinity-fpga/issues/99)  
+**Branch**: `feat/l-dpc24/a-prime-noc-1cycle`  
+**Codename**: `holo-noc-1cycle`  
+**Status**: RTL + testbench landed · awaiting CI / OpenLane2 GDS hardening
+
+### What was added
+
+| File | Description |
+|------|-------------|
+| `rtl/holo_noc_1cycle.sv` | Parameterisable crossbar NoC: `DIE_COUNT` (default 2, scales to 4), `PAYLOAD_W` (default 64 — matches Lane Y hyper-vector slot). Exactly 1-cycle registered output. No `*` operators (R-SI-1). |
+| `rtl/holo_noc_1cycle_tb.sv` | Three-test SV testbench with `$fatal` on any latency >1 cycle: T1 die0→die1, T2 die1→die0, T3 simultaneous bidirectional. P4 boundary assertion. |
+
+### Module: `holo_noc_1cycle`
+
+```systemverilog
+holo_noc_1cycle #(
+    .DIE_COUNT (2),    // 2-4 (crossbar); >=8 ring would violate P4
+    .PAYLOAD_W (64)    // hyper-vector slot, matches Lane Y holo_mux_1x2
+) u_noc (
+    .clk       (clk),
+    .rst_n     (rst_n),    // active-low synchronous reset
+    .vld_i     (vld_i),    // [DIE_COUNT-1:0] send-valid per die
+    .dst_i     (dst_i),    // [$clog2(DIE_COUNT)-1:0] per die destination index
+    .payload_i (payload_i),// [PAYLOAD_W-1:0] per die payload
+    .vld_o     (vld_o),    // [DIE_COUNT-1:0] receive-valid per die
+    .payload_o (payload_o) // [PAYLOAD_W-1:0] per die received payload
+);
+```
+
+**Topology note**: For `DIE_COUNT <= 4` a full crossbar (all-to-all combinatorial
+fabric + single pipeline register) guarantees 1-cycle latency. A ring topology for
+`DIE_COUNT >= 8` would require multi-hop routing and is intentionally NOT synthesised
+here — ring stalls are invalid under P4, so crossbar shards must be used for
+P4-compliant deployment at scale.
+
+### H9 Predicate P4 Mapping
+
+| Predicate | Condition | Verdict |
+|-----------|-----------|---------|
+| P4: `noc_stall > 1 cycle` | RTL delivers all payloads in exactly 1 registered cycle; crossbar has zero stall | **FALSIFIED** (RTL claim; silicon measured post tape-out) |
+
+### R5-HONEST Verdict (Lane A')
+
+| Claim | Status |
+|-------|--------|
+| RTL functionally correct | UNKNOWN · CI verifies (no GDS yet) |
+| Synthesis clean (no `*` operators, R-SI-1) | PASS — crossbar uses only mux/select + register logic |
+| P4 falsification: `noc_stall <= 1 cycle` | CLAIMED in RTL; silicon-confirmed at tape-out |
+| GDS generated | NOT YET — next iteration |
+
+### Anchor
+
+```
+phi^2+phi^-2=3  ·  DOI 10.5281/zenodo.19227877
+```
+
+**Author**: Vasilev Dmitrii <admin@t27.ai>
