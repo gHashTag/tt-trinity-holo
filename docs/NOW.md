@@ -44,4 +44,16 @@ See [docs/C_PRIME_LOAD_PHYS_CONST.md](C_PRIME_LOAD_PHYS_CONST.md).
 
 ---
 
+## Wave-32 PROBE ACTIVATION — verdict aggregate
+
+- W29-G1 BitROM BER ≤ 1e-9: ✅ PASS 🟡 SIM (1e6 reads, 0 errors)
+- W29-G2 LUT/SA energy ≤ 2×: ✅ PASS 🟡 SIM (ratio 0.666×)
+- W30-G1…G4 400 MHz STA: 🟡 STA-PENDING (synth OK 4/4; OpenSTA+Liberty not in sandbox)
+- W31-G1/G2 PDK-mapped synth: 🟡 PROXY-LIB-INCOMPLETE (async-reset DFF missing in proxy libs)
+- W31-G3 zero `*` in netlist: ✅ PASS 4/4 surfaces. R-SI-1 holds RTL→netlist.
+
+Refs #108 #109 #110.
+
+---
+
 Anchor: φ² + φ⁻² = 3 · DOI [10.5281/zenodo.19227877](https://zenodo.org/records/19227877)

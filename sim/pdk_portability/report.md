@@ -13,23 +13,24 @@ Silicon-verified 🟢 only on multi-PDK silicon return.
 - Tool: Yosys >= 0.38 (synth + abc tech-map)
 - Run: `make report` (requires Yosys installed)
 
-## Results (initial — fill with `make report`)
+## Results (Wave-32 activation, 2026-05-16 — generic Yosys synth fallback)
 
-| Surface | SG13G3 gates | SG13G3 area-proxy | SKY90 gates | SKY90 area-proxy | * count both |
+Proxy Liberty files (sg13g3_tech.lib, sky90_tech.lib) lack async-reset DFF cells that `dfflegalize` requires for the LUT PE's `always_ff @(posedge clk or negedge rst_n)` register style. Pending real IHP Open-PDK Liberty integration, Wave-32 falls back to **generic Yosys synth** (no PDK Liberty mapping) to capture gate counts and the R-SI-1 invariant.
+
+| Surface | Generic cells | Wires | Generic DFFs | Combinational | $mul/$div/$mod count |
 |---|---|---|---|---|---|
-| Lane V LUT PE | N | N | N | N | 0 ← W31-G3 |
-| Lane W BitROM | N | N | N | N | 0 |
-| Lane V' mesh | N | N | N | N | 0 |
-| Lane S sparsity | N | N | N | N | 0 |
+| Lane V LUT PE      | **463**  | 346  | 137 (DFFE/DFF) | 326 | **0** ← W31-G3 |
+| Lane W BitROM bank | **1**    | 10   | 1 (SDFF) | 0 | **0** |
+| Lane V' 2×2 mesh   | **1809** | 1132 | 396 (SDFF) | 1413 | **0** |
+| Lane S sparsity 24 | **92**   | 91   | 10 (DFF) | 82 | **0** |
 
-> **Note:** `N` = not yet measured. Run `make report` in `sim/pdk_portability/`
-> to populate.  Area-proxy is in µm² (Yosys internal unit, **not** routed area).
+Lane W collapses to 1 cell because the sentinel `4'b1010` weight pattern is constant for all 64 cells; Yosys optimizes the lookup to a constant fan-out. With real per-cell weight initialisation at chip-boot the cell count will rise; W29-G1 BER probe (PR #31, merged) exercises the actual ROM read path independently.
 
 ## Verdict
 
-W31-G1 (SG13G3 clean): PASS|FAIL
-W31-G2 (SKY90 clean): PASS|FAIL
-W31-G3 (zero * in netlist): PASS|FAIL
+- **W31-G1 (SG13G3 PDK-mapped synth clean):** 🟡 **PROXY-LIB-INCOMPLETE** — proxy Liberty missing async-reset DFF, real IHP Open-PDK Liberty integration tracked as follow-up (no W31-G1 numeric verdict in Wave-32).
+- **W31-G2 (SKY90 PDK-mapped synth clean):** 🟡 **PROXY-LIB-INCOMPLETE** — same root cause; SKY90 has no public Liberty release in any case.
+- **W31-G3 (zero `*` operators in synthesised netlist):** ✅ **PASS** across all 4 surfaces. Confirmed by grep `\$mul|\$div|\$mod` against generic Yosys netlists — 0 hits on all 4. R-SI-1 holds end-to-end (RTL → netlist).
 
 ---
 

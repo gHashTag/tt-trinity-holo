@@ -53,8 +53,13 @@
 
 ## W30-G1..G4 Results — Wave-30 Setup Slack Table
 
-> **🟡 STATIC-ANALYSIS-ONLY** — numbers derived from RTL AST structural analysis,
-> NOT from Yosys synth + OpenSTA STA run. Method column states this explicitly per R5-HONEST.
+> **Two methods, two confidence levels:**
+> 1. **Static AST analysis** (initial estimate, sandbox without tools) — below in this section.
+> 2. **Yosys generic synth** (Wave-32 activation 2026-05-16, sandbox with Yosys 0.52 + sv2v) — second table below.
+>
+> Both are 🟡 sim-grade. Commercial STA on real TTIHP27a Liberty is the binding gate.
+
+### Method A — Static AST structural analysis (pre-toolchain estimate)
 
 | Gate | Lane | Surface | RTL SHA | Gate count (proxy) | Critical path (proxy) | Setup slack @ 2.5 ns | Hold slack | Method | Verdict |
 |------|------|---------|---------|-------------------|----------------------|---------------------|------------|--------|---------|
@@ -63,8 +68,33 @@
 | **W30-G3** | Lane V' | 2×2 mesh NoC | `2a06e540` | ~1448 cells (448 FF + 1000 comb) | 0.44 ns | **+1730 ps** | **+80 ps** | static AST analysis (R5-HONEST sim-grade) | 🟡 PASS* |
 | **W30-G4** | Lane S | 2:4 Sparsity Decoder | `98246bd3` | ~70 cells (10 FF + 60 comb) | 0.52 ns | **+1650 ps** | **+120 ps** | static AST analysis (R5-HONEST sim-grade) | 🟡 PASS* |
 
-**\* 🟡 PASS** = positive setup slack by static analysis, but NOT confirmed by Yosys + OpenSTA.
-Promote to **🟢 PASS** only after `make yosys && make report` produces measured results.
+**\* 🟡 PASS** = positive setup slack by static analysis, but NOT confirmed by Yosys + OpenSTA. Promote to **🟢 PASS** only after `make yosys && make report` produces measured results.
+
+### Method B — Yosys generic synth (Wave-32 activation 2026-05-16)
+
+Yosys 0.52 + sv2v 0.0.13 installed in sandbox. Generic synth (no PDK Liberty) succeeds for all 4 surfaces. OpenSTA + sky130 HD Liberty still not in sandbox, so numeric setup/hold slack remains STA-PENDING.
+
+| Lane | Module | Yosys generic synth | setup_slack_ps | hold_slack_ps | verdict |
+|------|--------|---------------------|----------------|---------------|---------|
+| Lane V  — LUT PE      | `holo_lut_pe`       | ✅ 463 cells / 326 comb / 137 FF | STA-PENDING | STA-PENDING | 🟡 SYNTH-OK |
+| Lane W  — BitROM bank | `holo_bitrom_bank`  | ✅ 1 cell (sentinel-flattened†) | STA-PENDING | STA-PENDING | 🟡 SYNTH-OK |
+| Lane V' — 2×2 mesh    | `holo_mesh_2x2`     | ✅ 1809 cells / 1413 comb / 396 FF | STA-PENDING | STA-PENDING | 🟡 SYNTH-OK |
+| Lane S  — Sparsity 24 | `holo_sparsity_24`  | ✅ 92 cells / 82 comb / 10 FF | STA-PENDING | STA-PENDING | 🟡 SYNTH-OK |
+
+† Lane W collapses to 1 cell because the sentinel `4'b1010` weight pattern is constant for all 64 cells; Yosys optimises the lookup to a constant fan-out. With real per-cell weight initialisation at chip-boot the cell count rises toward the AST estimate (~128 cells). The W29-G1 BER probe ([PR #31](https://github.com/gHashTag/tt-trinity-holo/pull/31), merged) exercises the actual ROM read path independently.
+
+### Method A vs Method B comparison
+
+| Surface | AST estimate | Yosys synth | Delta | Notes |
+|---|---|---|---|---|
+| Lane V LUT PE | 164 | 463 | +299 (+182%) | AST under-counted LUT memory FF expansion (137 DFF expanded vs 9 in AST) |
+| Lane W BitROM | 128 | 1 | −127 | Yosys flatten + constant-folding collapses sentinel pattern; AST closer to production behaviour |
+| Lane V' 2×2 mesh | 1448 | 1809 | +361 (+25%) | AST router/noc estimate close, undercount in MUX (Yosys ~774 MUX) |
+| Lane S sparsity 24 | 70 | 92 | +22 (+31%) | AST and synth within 30% |
+
+**Reconciliation:** Both methods agree on timing feasibility direction (positive slack plausible at 400 MHz). The Yosys generic-synth gate counts are the more authoritative reference for area planning; the AST critical-path depths remain the only available timing proxy until STA is restored.
+
+**W30-G1…G4 verdict:** 🟡 **STATIC-ANALYSIS PASS\* + SYNTH-OK** — binding gate is commercial STA on real TTIHP27a Liberty.
 
 **Legend:**
 - `Gate count (proxy)` — structural estimate: FF count from `always_ff` output-reg bits; comb from logic-level depth analysis of `always_comb` / combinational paths. NOT `yosys stat` output.
