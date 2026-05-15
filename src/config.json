@@ -1,0 +1,8 @@
+{
+  "DESIGN_NAME": "tt_um_qbrain_holo",
+  "CLOCK_PERIOD": 20.0,
+  "DIE_AREA": "0 0 320 100",
+  "FP_SIZING": "absolute",
+  "RUN_KLAYOUT_DRC": true,
+  "SYNTH_STRATEGY": "AREA 0"
+}

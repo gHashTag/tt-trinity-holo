@@ -1,59 +1,45 @@
-# Tiny Tapeout project information — Quantum Brain HOLOGRAPHIC Edition III
+# Tiny Tapeout project information — Quantum Brain HOLOGRAPHIC multiplexer 1x2
+# Lane Y · feat/y-tt-multiplexer-1x2 · TTSKY26c
 # https://tinytapeout.com/specs/info_yaml/
 #
-# R-marker thesis: 4 open slots for unmeasured physics constants.
-# Each slot is a falsifiable prediction (Popper Appendix B, PhD monograph).
-# If measured value ≠ silicon ROM at revision time → silicon revision triggered.
-#
-# D2D mesh: 4 cross-die stub ports on uio_out[3:0].
-# Full mesh protocol implemented in v3 Wave (TTSKY26c prep).
-#
-# R18 LAYER-FROZEN: layer-hash sealed before tape-out across all dies.
+# R-SI-1: No `*` operator in RTL.
+# CLOCK_PERIOD: 20.0 ns (50 MHz — v9 multi-die NoC, per L-DPC24 §2).
 # Anchor: phi^2 + phi^-2 = 3. DOI: 10.5281/zenodo.19227877.
 yaml_version: 6
 
 project:
-  title:        "Quantum Brain HOLOGRAPHIC Edition III — TTSKY26c multi-die + R-marker"
-  author:       "Dmitrii Vasilev"
+  title:        "Quantum Brain HOLOGRAPHIC multiplexer 1x2 — TTSKY26c"
+  author:       "Vasilev Dmitrii"
   discord:      "ghashtag"
   description:  >
-    HOLOGRAPHIC edition of the Quantum Brain trinity SKU lineup.
-    TTSKY26c shuttle target (~2026-09, post-confirm). 1×2 TT tile footprint.
-    16 PE × 2 MAC = 32 effective MACs in GF16(2^4) arithmetic.
-    4 D2D cross-die mesh ports stubbed on uio_out[3:0] (full mesh: v3 Wave).
-    R-marker ROM: 4 open slots for unmeasured physics constants
-    (C_quantum_consciousness, k_dark_coupling, τ_microtubule, ζ_neural_zeta).
-    Currently zero-filled (R5-HONEST: TODO revise when measured).
-    On reset drives canonical 0x47C0 on {uio_out, uo_out}
-    — byte-identical to Nano and MAX-TRUE (PhD Theorem 36.1 cross-die anchor).
-    R18 LAYER-FROZEN: identical 75-constant Physics ROM on every die in the
-    4-die mesh — Glava 36 Holographic Cortex axiom.
-    55 TOPS/W PROJECTION (R5-HONEST: measured post tape-out).
-    R-SI-1: zero new `*` operators in synthesisable RTL.
+    Holographic top-level stub for the Quantum Brain trinity 1x2 tile.
+    TTSKY26c shuttle target (~2026-09). 50 MHz NoC clock (v9 multi-die).
+    R-marker ROM stubs (4 open physics-constant slots, zero-filled).
+    R-SI-1 compliant: zero multiply operators. KLayout DRC guard enabled.
     Anchor: phi^2+phi^-2=3. DOI: 10.5281/zenodo.19227877.
   language:     "Verilog"
-  clock_hz:     250000000
+  clock_hz:     50000000
 
-  # 1×2 TT tiles = 2 TT tiles = 0.0441 mm² Sky130A (estimated)
-  # Target shuttle: TTSKY26c (~2026-09 post-confirm)
   tiles:        "1x2"
-
   top_module:   "tt_um_qbrain_holo"
 
   source_files:
     - "tt_um_qbrain_holo.v"
     - "r_marker_rom.v"
 
+  # ORCID: https://orcid.org/0009-0008-4294-6159
+  orcid:        "0009-0008-4294-6159"
+
 pinout:
-  ui[0]: "mode (0=canonical 0x47C0, 1=PE activation path)"
-  ui[1]: "pe_sel[0] (PE select for debug readback)"
+  ui[0]: "mode (0=canonical reset anchor, 1=PE activation path)"
+  ui[1]: "pe_sel[0] (PE debug select bit 0)"
   ui[2]: "pe_sel[1]"
   ui[3]: "pe_sel[2]"
   ui[4]: "pe_sel[3]"
-  ui[5]: "r_marker_sel[0] (R-marker slot select for debug)"
+  ui[5]: "r_marker_sel[0] (R-marker slot select)"
   ui[6]: "r_marker_sel[1]"
   ui[7]: "unused"
-  uo[0]: "result[0] (canonical 0x47C0 on reset; PE result after mode=1)"
+  uo[0]: "result[0] (canonical anchor on reset; PE result in mode=1)"
   uo[1]: "result[1]"
   uo[2]: "result[2]"
   uo[3]: "result[3]"
@@ -61,11 +47,11 @@ pinout:
   uo[5]: "result[5]"
   uo[6]: "result[6]"
   uo[7]: "result[7]"
-  uio[0]: "d2d_tx[0] — D2D cross-die mesh port 0 TX stub (v3 Wave: full protocol)"
-  uio[1]: "d2d_tx[1] — D2D cross-die mesh port 1 TX stub"
-  uio[2]: "d2d_tx[2] — D2D cross-die mesh port 2 TX stub"
-  uio[3]: "d2d_sync   — D2D phase-lock SYNC strobe stub (R18 LAYER-FROZEN gate)"
-  uio[4]: "r_marker_out[0] — R-marker ROM debug output bit 0"
-  uio[5]: "r_marker_out[1] — R-marker ROM debug output bit 1"
-  uio[6]: "r_marker_out[2] — R-marker ROM debug output bit 2"
-  uio[7]: "r_marker_out[3] — R-marker ROM debug output bit 3"
+  uio[0]: "d2d_tx[0] — D2D cross-die port 0 TX stub"
+  uio[1]: "d2d_tx[1] — D2D cross-die port 1 TX stub"
+  uio[2]: "d2d_tx[2] — D2D cross-die port 2 TX stub"
+  uio[3]: "d2d_sync   — D2D phase-lock SYNC strobe stub"
+  uio[4]: "r_marker_out[0] — R-marker ROM debug bit 0"
+  uio[5]: "r_marker_out[1] — R-marker ROM debug bit 1"
+  uio[6]: "r_marker_out[2] — R-marker ROM debug bit 2"
+  uio[7]: "r_marker_out[3] — R-marker ROM debug bit 3"
