@@ -4,6 +4,30 @@ This file tracks the currently active RTL lanes on `gHashTag/tt-trinity-holo`.
 
 ---
 
+## Lane T — TENET Sparsity-Aware LUT Skip (OP_SPARSE_SKIP 0xE1) · L-DPC29 Wave-33
+
+**Status:** filed on branch `feat/wave33-tenet-lane-t`
+**Tracking issue:** [gHashTag/trinity-fpga#114](https://github.com/gHashTag/trinity-fpga/issues/114)
+**Opcode:** `0xE1` (sacred range, continues after Lane W `0xE0`)
+**Coq witness (Lane T'):** [gHashTag/t27 PR #645](https://github.com/gHashTag/t27/pull/645) merged `8eb3ac13`
+**Strategic ref:** trios `docs/strategic/TOPS-LEVERS-2026-05-16-001.md`
+
+### New files
+
+| File | Lines | Description |
+|------|------:|-------------|
+| `rtl/holo_sparse_skip.sv` | ~140 | TENET sparsity-aware LUT skip controller; sliding-window zero count, threshold comparator, single-bit `skip_o` output |
+| `sim/sparse_skip_probe/probe.sv` | ~95 | iverilog testbench: 10000 cycles of 2:4 popcount-2 masks, counts skip-rate |
+| `sim/sparse_skip_probe/Makefile` | ~30 | sv2v + iverilog build |
+| `sim/sparse_skip_probe/report.md` | ~90 | W33-G1 (no `*`) + W33-G4 (≥250/1000 skip-rate) verdict report 🟡 SIM |
+
+### Wave-33 G1 + G4 results
+
+- **W33-G1 (zero `*` in synth):** 102 cells in Yosys generic synth · 0 `$mul/$div/$mod` ✅ PASS
+- **W33-G4 (skip-rate ≥ 250/1000):** 1000/1000 parts-per-thousand · ✅ PASS 🟡 SIM
+
+---
+
 ## Lane V — Platinum LUT PE (OP_LUT_LOOKUP 0xDF) · L-DPC25 Wave-28
 
 **Status:** delivered on branch `feat/lane-v-platinum-lut-pe`  
