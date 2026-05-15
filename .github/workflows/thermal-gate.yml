@@ -1,0 +1,36 @@
+name: thermal-gate
+
+on:
+  push:
+    branches:
+      - main
+      - "feat/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  thermal-gate:
+    name: "holo-thermal-gate · P5 hotspot ≤ 1.0 W/mm²"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            thermal/target
+          key: ${{ runner.os }}-cargo-thermal-${{ hashFiles('thermal/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-thermal-
+
+      - name: Run thermal gate (P5 check)
+        run: cargo run --bin holo-thermal-gate --manifest-path thermal/Cargo.toml
