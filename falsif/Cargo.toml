@@ -1,0 +1,15 @@
+[package]
+name = "holo-falsif"
+version = "0.1.0"
+edition = "2021"
+authors = ["admin@t27.ai"]
+description = "L-DPC24 Lane E' — 5 Rust falsification witnesses for H₉ (TOPS/W ≥ 2000 on 1×2 HOLOGRAPHIC tile at Vdd=1.8V)"
+license = "Apache-2.0"
+
+# Anchor: φ²+φ⁻²=3 · DOI 10.5281/zenodo.19227877
+
+[dependencies]
+sha2 = "0.10"
+
+[dev-dependencies]
+sha2 = "0.10"
