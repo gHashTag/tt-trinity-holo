@@ -1,0 +1,393 @@
+/* =============================================================================
+ * sg13g3_tech.lib — SG13G3 Liberty PROXY (Wave-31 Lane M)
+ * =============================================================================
+ *
+ * R5-HONEST DISCLOSURE:
+ *   This is a PROXY Liberty file.  It is NOT the production IHP sg13g2/sg13g3
+ *   standard-cell Liberty.  It is a minimal hand-crafted Liberty that mirrors
+ *   the IHP Open-PDK cell-naming conventions and uses conservative estimated
+ *   timing arcs derived from publicly available IHP 130 nm process data.
+ *
+ *   Canonical open-source Liberty (real sg13g2):
+ *     https://github.com/IHP-GmbH/IHP-Open-PDK
+ *     path: ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/
+ *
+ *   GAP vs real Liberty:
+ *   - Timing arcs: estimated at FO4 ~130 ps (typical, tt 1.2 V 25 °C).
+ *     Real characterisation may differ ±20–30 % depending on PVT corner.
+ *   - Drive strengths: only x1 and x2 cells included (real PDK has x0.5–x8).
+ *   - No power/leakage data — area-proxy only.
+ *   - No I/O pad cells.
+ *
+ *   This file is sufficient for Yosys abc tech-mapping and gate-count
+ *   estimation.  It is NOT sufficient for:
+ *     - Post-route STA (PrimeTime / Tempus)
+ *     - Timing sign-off at any PVT corner
+ *     - Tape-out submission
+ *
+ *   Silicon-verified 🟢 requires the real sg13g2/sg13g3 Liberty from IHP
+ *   under their open-source licence (Apache-2.0).
+ *
+ * R-SI-1:  No * operator in synthesisable RTL — not applicable to Liberty.
+ * R18:     RTL from PRs #19/#14/#21/#26 is NOT modified by this file.
+ * Refs #110
+ * =============================================================================
+ */
+
+library (sg13g3_proxy) {
+  technology (cmos);
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1uA";
+  leakage_power_unit : "1nW";
+  pulling_resistance_unit : "1kohm";
+  capacitive_load_unit (1, pf);
+
+  nom_process   : 1.0;
+  nom_voltage   : 1.2;
+  nom_temperature : 25.0;
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_and2_1 — 2-input AND gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_and2_1) {
+    area : 4.0;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (X) {
+      direction : output;
+      function  : "(A & B)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.13"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.04"); }
+        fall_transition (scalar) { values ("0.04"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.13"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.04"); }
+        fall_transition (scalar) { values ("0.04"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_or2_1 — 2-input OR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_or2_1) {
+    area : 4.0;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (X) {
+      direction : output;
+      function  : "(A | B)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.14"); }
+        cell_fall    (scalar) { values ("0.12"); }
+        rise_transition (scalar) { values ("0.04"); }
+        fall_transition (scalar) { values ("0.04"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.14"); }
+        cell_fall    (scalar) { values ("0.12"); }
+        rise_transition (scalar) { values ("0.04"); }
+        fall_transition (scalar) { values ("0.04"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_xor2_1 — 2-input XOR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_xor2_1) {
+    area : 6.0;
+    pin (A) { direction : input;  capacitance : 0.005; }
+    pin (B) { direction : input;  capacitance : 0.005; }
+    pin (X) {
+      direction : output;
+      function  : "(A ^ B)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.20"); }
+        cell_fall    (scalar) { values ("0.18"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.20"); }
+        cell_fall    (scalar) { values ("0.18"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_nand2_1 — 2-input NAND gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_nand2_1) {
+    area : 3.5;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (Y) {
+      direction : output;
+      function  : "!(A & B)";
+      timing () {
+        related_pin : "A";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "B";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_nor2_1 — 2-input NOR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_nor2_1) {
+    area : 3.5;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (Y) {
+      direction : output;
+      function  : "!(A | B)";
+      timing () {
+        related_pin : "A";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "B";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_inv_1 — Inverter, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_inv_1) {
+    area : 2.0;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (Y) {
+      direction : output;
+      function  : "(!A)";
+      timing () {
+        related_pin : "A";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.07"); }
+        cell_fall    (scalar) { values ("0.06"); }
+        rise_transition (scalar) { values ("0.02"); }
+        fall_transition (scalar) { values ("0.02"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_buf_1 — Buffer, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_buf_1) {
+    area : 3.0;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (X) {
+      direction : output;
+      function  : "A";
+      timing () {
+        related_pin : "A";
+        timing_sense : positive_unate;
+        cell_rise    (scalar) { values ("0.08"); }
+        cell_fall    (scalar) { values ("0.07"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_mux2_1 — 2-input MUX, drive x1
+   *   Y = S ? B : A
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_mux2_1) {
+    area : 7.0;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (S) { direction : input;  capacitance : 0.005; }
+    pin (Y) {
+      direction : output;
+      function  : "((S & B) | (!S & A))";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.18"); }
+        cell_fall    (scalar) { values ("0.16"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.18"); }
+        cell_fall    (scalar) { values ("0.16"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "S";
+        cell_rise    (scalar) { values ("0.22"); }
+        cell_fall    (scalar) { values ("0.20"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_dff_1 — D flip-flop, positive-edge triggered, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_dff_1) {
+    area : 10.0;
+    ff ("IQ","IQN") {
+      next_state        : "D";
+      clocked_on        : "CLK";
+    }
+    pin (D) {
+      direction : input;
+      capacitance : 0.005;
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : setup_rising;
+        rise_constraint (scalar) { values ("0.05"); }
+        fall_constraint (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : hold_rising;
+        rise_constraint (scalar) { values ("0.02"); }
+        fall_constraint (scalar) { values ("0.02"); }
+      }
+    }
+    pin (CLK) {
+      direction : input;
+      capacitance : 0.006;
+      clock : true;
+    }
+    pin (Q) {
+      direction : output;
+      function  : "IQ";
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : rising_edge;
+        cell_rise    (scalar) { values ("0.15"); }
+        cell_fall    (scalar) { values ("0.14"); }
+        rise_transition (scalar) { values ("0.04"); }
+        fall_transition (scalar) { values ("0.04"); }
+      }
+    }
+    pin (QN) {
+      direction : output;
+      function  : "IQN";
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : rising_edge;
+        cell_rise    (scalar) { values ("0.16"); }
+        cell_fall    (scalar) { values ("0.15"); }
+        rise_transition (scalar) { values ("0.04"); }
+        fall_transition (scalar) { values ("0.04"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_and3_1 — 3-input AND gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_and3_1) {
+    area : 5.5;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (C) { direction : input;  capacitance : 0.004; }
+    pin (X) {
+      direction : output;
+      function  : "(A & B & C)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.16"); }
+        cell_fall    (scalar) { values ("0.14"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.16"); }
+        cell_fall    (scalar) { values ("0.14"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "C";
+        cell_rise    (scalar) { values ("0.16"); }
+        cell_fall    (scalar) { values ("0.14"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sg13g3_or3_1 — 3-input OR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sg13g3_or3_1) {
+    area : 5.5;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (C) { direction : input;  capacitance : 0.004; }
+    pin (X) {
+      direction : output;
+      function  : "(A | B | C)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.17"); }
+        cell_fall    (scalar) { values ("0.15"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.17"); }
+        cell_fall    (scalar) { values ("0.15"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+      timing () {
+        related_pin : "C";
+        cell_rise    (scalar) { values ("0.17"); }
+        cell_fall    (scalar) { values ("0.15"); }
+        rise_transition (scalar) { values ("0.05"); }
+        fall_transition (scalar) { values ("0.05"); }
+      }
+    }
+  }
+
+}
+/* end library sg13g3_proxy */

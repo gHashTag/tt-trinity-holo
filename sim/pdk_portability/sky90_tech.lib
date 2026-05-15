@@ -1,0 +1,400 @@
+/* =============================================================================
+ * sky90_tech.lib — SKY90 Liberty PROXY (Wave-31 Lane M)
+ * =============================================================================
+ *
+ * R5-HONEST DISCLOSURE:
+ *   SKY90 is NOT a publicly released SkyWater PDK.  SkyWater Technology has
+ *   released sky130 (130 nm) and announced sky90 for future release, but as of
+ *   Wave-31 (2026-05-20) no open-source sky90 Liberty exists.
+ *
+ *   This file is a 90-nm-class PROXY Liberty based on:
+ *   - ITRS 2013 90 nm node typical cell estimates (public domain)
+ *   - Scaling ratios from sky130 HD open Liberty (Apache-2.0)
+ *     https://github.com/google/skywater-pdk/tree/main/libraries/sky130_fd_sc_hd
+ *   - Published academic characterisation for generic 90 nm CMOS
+ *     (e.g. Nangate 45nm OCL scaled ×2, FO4 ~80 ps at 90 nm typical)
+ *
+ *   GAP vs real sky90 Liberty (if/when released):
+ *   - Timing arcs: estimated at FO4 ~90 ps (90 nm typical, tt 1.0 V 25 °C).
+ *     Actual SkyWater sky90 characterisation may differ ±25–35 %.
+ *   - Drive strengths: only x1 cells included.
+ *   - No power/leakage data — area-proxy only.
+ *   - Cell names use sky90_ prefix (anticipatory; not confirmed by SkyWater).
+ *
+ *   PURPOSE:  This file enables Yosys abc tech-mapping to estimate relative
+ *   gate counts at the 90 nm node, giving a portability signal for the four
+ *   merged RTL surfaces (Lane V/W/V'/S).  The absolute numbers are NOT
+ *   representative of any real silicon product.
+ *
+ *   This file is sufficient for gate-count estimation only.
+ *   It is NOT sufficient for:
+ *     - Post-route STA
+ *     - Timing sign-off at any PVT corner
+ *     - Tape-out submission
+ *
+ *   Silicon-verified 🟢 requires a real sky90 Liberty from SkyWater when/if
+ *   released under an open-source licence.
+ *
+ * R-SI-1:  No * operator in synthesisable RTL — not applicable to Liberty.
+ * R18:     RTL from PRs #19/#14/#21/#26 is NOT modified by this file.
+ * Refs #110
+ * =============================================================================
+ */
+
+library (sky90_proxy) {
+  technology (cmos);
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1uA";
+  leakage_power_unit : "1nW";
+  pulling_resistance_unit : "1kohm";
+  capacitive_load_unit (1, pf);
+
+  nom_process   : 1.0;
+  nom_voltage   : 1.0;
+  nom_temperature : 25.0;
+
+  /* -------------------------------------------------------------------------
+   * sky90_and2_1 — 2-input AND gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_and2_1) {
+    area : 2.8;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (X) {
+      direction : output;
+      function  : "(A & B)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.09"); }
+        cell_fall    (scalar) { values ("0.08"); }
+        rise_transition (scalar) { values ("0.025"); }
+        fall_transition (scalar) { values ("0.025"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.09"); }
+        cell_fall    (scalar) { values ("0.08"); }
+        rise_transition (scalar) { values ("0.025"); }
+        fall_transition (scalar) { values ("0.025"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_or2_1 — 2-input OR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_or2_1) {
+    area : 2.8;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (X) {
+      direction : output;
+      function  : "(A | B)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.025"); }
+        fall_transition (scalar) { values ("0.025"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.025"); }
+        fall_transition (scalar) { values ("0.025"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_xor2_1 — 2-input XOR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_xor2_1) {
+    area : 4.2;
+    pin (A) { direction : input;  capacitance : 0.004; }
+    pin (B) { direction : input;  capacitance : 0.004; }
+    pin (X) {
+      direction : output;
+      function  : "(A ^ B)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.14"); }
+        cell_fall    (scalar) { values ("0.13"); }
+        rise_transition (scalar) { values ("0.035"); }
+        fall_transition (scalar) { values ("0.035"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.14"); }
+        cell_fall    (scalar) { values ("0.13"); }
+        rise_transition (scalar) { values ("0.035"); }
+        fall_transition (scalar) { values ("0.035"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_nand2_1 — 2-input NAND gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_nand2_1) {
+    area : 2.4;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (Y) {
+      direction : output;
+      function  : "!(A & B)";
+      timing () {
+        related_pin : "A";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.07"); }
+        cell_fall    (scalar) { values ("0.06"); }
+        rise_transition (scalar) { values ("0.02"); }
+        fall_transition (scalar) { values ("0.02"); }
+      }
+      timing () {
+        related_pin : "B";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.07"); }
+        cell_fall    (scalar) { values ("0.06"); }
+        rise_transition (scalar) { values ("0.02"); }
+        fall_transition (scalar) { values ("0.02"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_nor2_1 — 2-input NOR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_nor2_1) {
+    area : 2.4;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (Y) {
+      direction : output;
+      function  : "!(A | B)";
+      timing () {
+        related_pin : "A";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.07"); }
+        cell_fall    (scalar) { values ("0.06"); }
+        rise_transition (scalar) { values ("0.02"); }
+        fall_transition (scalar) { values ("0.02"); }
+      }
+      timing () {
+        related_pin : "B";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.07"); }
+        cell_fall    (scalar) { values ("0.06"); }
+        rise_transition (scalar) { values ("0.02"); }
+        fall_transition (scalar) { values ("0.02"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_inv_1 — Inverter, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_inv_1) {
+    area : 1.4;
+    pin (A) { direction : input;  capacitance : 0.002; }
+    pin (Y) {
+      direction : output;
+      function  : "(!A)";
+      timing () {
+        related_pin : "A";
+        timing_sense : negative_unate;
+        cell_rise    (scalar) { values ("0.05"); }
+        cell_fall    (scalar) { values ("0.04"); }
+        rise_transition (scalar) { values ("0.015"); }
+        fall_transition (scalar) { values ("0.015"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_buf_1 — Buffer, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_buf_1) {
+    area : 2.1;
+    pin (A) { direction : input;  capacitance : 0.002; }
+    pin (X) {
+      direction : output;
+      function  : "A";
+      timing () {
+        related_pin : "A";
+        timing_sense : positive_unate;
+        cell_rise    (scalar) { values ("0.06"); }
+        cell_fall    (scalar) { values ("0.05"); }
+        rise_transition (scalar) { values ("0.02"); }
+        fall_transition (scalar) { values ("0.02"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_mux2_1 — 2-input MUX, drive x1
+   *   Y = S ? B : A
+   * ------------------------------------------------------------------------- */
+  cell (sky90_mux2_1) {
+    area : 4.9;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (S) { direction : input;  capacitance : 0.004; }
+    pin (Y) {
+      direction : output;
+      function  : "((S & B) | (!S & A))";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.12"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.12"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "S";
+        cell_rise    (scalar) { values ("0.15"); }
+        cell_fall    (scalar) { values ("0.14"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_dff_1 — D flip-flop, positive-edge triggered, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_dff_1) {
+    area : 7.0;
+    ff ("IQ","IQN") {
+      next_state   : "D";
+      clocked_on   : "CLK";
+    }
+    pin (D) {
+      direction : input;
+      capacitance : 0.004;
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : setup_rising;
+        rise_constraint (scalar) { values ("0.04"); }
+        fall_constraint (scalar) { values ("0.04"); }
+      }
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : hold_rising;
+        rise_constraint (scalar) { values ("0.015"); }
+        fall_constraint (scalar) { values ("0.015"); }
+      }
+    }
+    pin (CLK) {
+      direction : input;
+      capacitance : 0.005;
+      clock : true;
+    }
+    pin (Q) {
+      direction : output;
+      function  : "IQ";
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : rising_edge;
+        cell_rise    (scalar) { values ("0.10"); }
+        cell_fall    (scalar) { values ("0.09"); }
+        rise_transition (scalar) { values ("0.025"); }
+        fall_transition (scalar) { values ("0.025"); }
+      }
+    }
+    pin (QN) {
+      direction : output;
+      function  : "IQN";
+      timing () {
+        related_pin  : "CLK";
+        timing_type  : rising_edge;
+        cell_rise    (scalar) { values ("0.11"); }
+        cell_fall    (scalar) { values ("0.10"); }
+        rise_transition (scalar) { values ("0.025"); }
+        fall_transition (scalar) { values ("0.025"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_and3_1 — 3-input AND gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_and3_1) {
+    area : 3.8;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (C) { direction : input;  capacitance : 0.003; }
+    pin (X) {
+      direction : output;
+      function  : "(A & B & C)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.11"); }
+        cell_fall    (scalar) { values ("0.10"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.11"); }
+        cell_fall    (scalar) { values ("0.10"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "C";
+        cell_rise    (scalar) { values ("0.11"); }
+        cell_fall    (scalar) { values ("0.10"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * sky90_or3_1 — 3-input OR gate, drive x1
+   * ------------------------------------------------------------------------- */
+  cell (sky90_or3_1) {
+    area : 3.8;
+    pin (A) { direction : input;  capacitance : 0.003; }
+    pin (B) { direction : input;  capacitance : 0.003; }
+    pin (C) { direction : input;  capacitance : 0.003; }
+    pin (X) {
+      direction : output;
+      function  : "(A | B | C)";
+      timing () {
+        related_pin : "A";
+        cell_rise    (scalar) { values ("0.12"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "B";
+        cell_rise    (scalar) { values ("0.12"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+      timing () {
+        related_pin : "C";
+        cell_rise    (scalar) { values ("0.12"); }
+        cell_fall    (scalar) { values ("0.11"); }
+        rise_transition (scalar) { values ("0.03"); }
+        fall_transition (scalar) { values ("0.03"); }
+      }
+    }
+  }
+
+}
+/* end library sky90_proxy */
