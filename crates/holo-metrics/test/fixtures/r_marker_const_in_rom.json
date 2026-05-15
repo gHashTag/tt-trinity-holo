@@ -1,0 +1,15 @@
+{
+  "r_markers_boot_loaded": false,
+  "r_marker_rom_slots": 4,
+  "description": "r_marker_const_in_rom — R15 breach fixture",
+  "_meta": {
+    "witness": "W-100-C",
+    "purpose": "Config with R-marker constants baked into ROM (not boot-loaded) — R-15 breach",
+    "expected_gate_result": "Err — check_r15() must reject (r_markers_boot_loaded=false)",
+    "l_dpc24_section": "§5",
+    "r5_honest": "This is a synthetic bad config — NOT a valid v9 configuration. Used only for witness testing.",
+    "r15_protocol": "R-15 requires R-marker constants to be supplied via boot-loader at runtime. Hard-coding in ROM prevents live recalibration per the falsification protocol.",
+    "rom_slots": 4,
+    "rom_slots_meaning": "4 physics-constant slots (C_quantum_consciousness, k_dark_coupling, tau_microtubule, zeta_neural) baked in ROM — FORBIDDEN by R-15"
+  }
+}

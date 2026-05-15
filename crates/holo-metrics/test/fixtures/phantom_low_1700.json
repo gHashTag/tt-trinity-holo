@@ -1,0 +1,13 @@
+{
+  "tops_per_watt": 1700.0,
+  "noc_latency_cycles": 1,
+  "thermal_w_per_mm2": 0.8,
+  "label": "phantom-low-1700",
+  "_meta": {
+    "witness": "W-100-A",
+    "purpose": "Synthetic phantom-low TOPS/W sample for falsification testing",
+    "expected_gate_result": "Err — check_v9_gate() must reject (1700 < 2000 floor)",
+    "l_dpc24_section": "§5",
+    "r5_honest": "This is a synthetic bad sample — NOT a real measurement. Used only for witness testing."
+  }
+}
