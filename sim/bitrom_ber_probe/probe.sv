@@ -153,7 +153,10 @@ module bitrom_ber_probe #(
 
                 // Determine expected output for in-range cells
                 // (OOB reads not counted toward BER per spec)
-                if (rand_cell_idx < 6'(CELL_COUNT)) begin
+                // FIX (Wave-32): use 32-bit comparison to avoid 6'(64) wrapping to 0.
+                // For CELL_COUNT==2^CELL_IDX_W (default 64), every 6-bit cell_idx is in-range
+                // by construction; the filter remains for future configurations CELL_COUNT < 64.
+                if (32'(rand_cell_idx) < 32'(CELL_COUNT)) begin
                     if (rand_dir == 1'b0) begin
                         expected = SENTINEL_A;
                     end else begin
