@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: "tt-trinity-holo · L-DPC24 HOLOGRAPHIC v9 · 1×2→1×4→octa multi-die Quantum Brain tile"
+message: "If you use this artefact, please cite the concept DOI below."
+type: software
+authors:
+  - family-names: Vasilev
+    given-names: Dmitrii
+    orcid: "https://orcid.org/0009-0008-4294-6159"
+repository-code: "https://github.com/gHashTag/tt-trinity-holo"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.19227877
+    description: "Concept DOI for the Trinity / Flos Aureus / HOLOGRAPHIC v9 line"
+keywords:
+  - "holographic computing"
+  - "quantum brain 1:1 silicon mapping"
+  - "TTSKY26c"
+  - "tinytapeout"
+  - "ternary AI"
+  - "R-marker hypervectors"
+  - "phi anchor"
+  - "open PDK"
+license: Apache-2.0
+abstract: "1×2/1×4/octa multi-die HOLOGRAPHIC tile targeting TTSKY26c shuttle (~2026-09) with
+  pre-registered hypothesis H₉: measured TOPS/W ≥ 2000. Anchor: φ²+φ⁻²=3.
+  Falsifiable via 5 Rust predicates P1..P5."

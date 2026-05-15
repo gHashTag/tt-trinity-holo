@@ -1,0 +1,28 @@
+name: Validate CITATION.cff
+
+on:
+  push:
+    paths:
+      - 'CITATION.cff'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install cffconvert
+        run: pip install cffconvert
+
+      - name: Validate CITATION.cff
+        run: cffconvert --validate
+
+      - name: Show parsed citation (informational)
+        run: cffconvert --format apalike
