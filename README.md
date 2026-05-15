@@ -176,3 +176,51 @@ Full treatment: [docs/PHD_GLAVA_36_HOLOGRAPHIC.md](docs/PHD_GLAVA_36_HOLOGRAPHIC
 
 *TTSKY26c target. Foundation work. Skeleton-only — compute RTL ships in v2/v3 Wave.*  
 *R5-HONEST mode active. No RTL invented — only MAX-TRUE proven cells reused.*
+
+---
+
+## L-DPC24 Lane Y — holo-tt-multiplexer-1x2 Bootstrap
+
+**Issue**: [trinity-fpga#99](https://github.com/gHashTag/trinity-fpga/issues/99)  
+**Branch**: `feat/l-dpc24/y-holo-mux-1x2-bootstrap`  
+**Status**: Bootstrap landed · awaiting CI / OpenLane2 GDS hardening
+
+### What was added
+
+| File | Description |
+|------|-------------|
+| `rtl/holo_mux_1x2.sv` | 2:1 mux with 1-cycle pipeline register, parameterisable `WIDTH` (default 64 for hypervector slot) |
+| `rtl/holo_mux_1x2_tb.sv` | Minimal SV testbench: write A, write B, sel=0 → assert A, sel=1 → assert B |
+
+### Module: `holo_mux_1x2`
+
+```
+holo_mux_1x2 #(.WIDTH(64)) u_mux (
+    .clk   (clk),
+    .rst_n (rst_n),
+    .die_a (die_a_data),   // output from Die A
+    .die_b (die_b_data),   // output from Die B
+    .sel   (sel),          // 0 → die_a, 1 → die_b
+    .dout  (selected_out)  // 1-cycle registered output
+);
+```
+
+The 1-cycle pipeline register absorbs cross-die combinatorial slack on the D2D mesh output
+path, consistent with the 250 MHz clock target (W15a STA).
+
+### R5-HONEST Verdict (Bootstrap)
+
+| Claim | Status |
+|-------|--------|
+| RTL functionally correct | UNKNOWN — CI will verify (no GDS yet) |
+| Synthesis clean (no `*` operators, R-SI-1) | PASS — module uses only mux/register logic |
+| H₉: TOPS/W ≥ 2000 | NOT CLAIMED — bootstrap only, OpenLane2 GDS hardening pending |
+| GDS generated | NOT YET — next iteration |
+
+### Anchor
+
+```
+φ²+φ⁻²=3  ·  DOI 10.5281/zenodo.19227877
+```
+
+**Author**: Vasilev Dmitrii \<admin@t27.ai\>
