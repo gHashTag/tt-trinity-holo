@@ -1,0 +1,53 @@
+name: gds
+
+# HOLO Edition III — TTSKY26c GDS workflow
+# Derived from tt-trinity-max-true pattern.
+# PDK: sky130A
+# Action pin: ttsky26b (documented: switch to @ttsky26c once shuttle tag published)
+# TODO: update action tag to @ttsky26c when TinyTapeout confirms TTSKY26c shuttle tag.
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  gds:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build GDS
+        uses: TinyTapeout/tt-gds-action@ttsky26b
+        with:
+          pdk: sky130A
+
+  precheck:
+    needs: gds
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run Tiny Tapeout Precheck
+        uses: TinyTapeout/tt-gds-action/precheck@ttsky26b
+
+  gl_test:
+    needs: gds
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: GL test
+        uses: TinyTapeout/tt-gds-action/gl_test@ttsky26b
+
+  viewer:
+    needs: gds
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: TinyTapeout/tt-gds-action/viewer@ttsky26b
