@@ -38,4 +38,10 @@ See [docs/C_PRIME_LOAD_PHYS_CONST.md](C_PRIME_LOAD_PHYS_CONST.md).
 
 ---
 
+## Lane B-FIX — Wave-32 BitROM BER probe truncation fix
+
+6'(64) wrapped to 0 → no reads counted. 32-bit comparison restores all 64 cells in-range. BER=0/1e6, W29-G1 PASS. Refs #108.
+
+---
+
 Anchor: φ² + φ⁻² = 3 · DOI [10.5281/zenodo.19227877](https://zenodo.org/records/19227877)
