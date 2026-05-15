@@ -1,0 +1,3 @@
+# Yosys synth output is reproducible; commit a snapshot from Wave-32 activation
+# to give reviewers an inspectable netlist set without forcing them to install
+# yosys+sv2v. Future Lane M revisions may regenerate via `make report`.

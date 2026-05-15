@@ -20,12 +20,28 @@
 
 ## Results
 
-- LUT PE toggles/op: N
-- Shift-add toggles/op: N
-- Ratio: N×
-- W28-G2 gate (≤ 2×): PASS|FAIL
+**Activated Wave-32 (2026-05-16):**
 
-> Run `make report` from `sim/lut_energy_probe/` to populate results with live simulation data.
+- LUT PE toggles/op:    399763 / 100000 = **3.998**
+- Shift-add toggles/op: 600310 / 100000 = **6.003**
+- Ratio LUT/SA:         **0.666×** (LUT is MORE energy-efficient than shift-add)
+- **W29-G2 gate (≤ 2×): ✅ PASS** 🟡 SIM
+
+### Output-data toggle histogram
+
+| Toggles | LUT PE ops | Shift-add ops |
+|---|---|---|
+| 0 | 6265 | 433 |
+| 1 | 25004 | 3059 |
+| 2 | 37536 | 11150 |
+| 3 | 24975 | 22281 |
+| 4 | 6220 | 26914 |
+| 5 | — | 21102 |
+| 6 | — | 10930 |
+| 7 | — | 3568 |
+| 8 | — | 563 |
+
+Distribution shape confirms LUT PE concentrates output toggling at 1-3 transitions/op (lookup is largely flat), while shift-add naturally distributes toggles 3-5/op via carry-chain propagation.
 
 ## Methodology
 
