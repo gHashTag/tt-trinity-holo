@@ -1,3 +1,14 @@
+> ## ℹ️ Status: TTSKY26c track — NOT in TTSKY26b TRIP FIRE
+>
+> This repository targets **TTSKY26c**. PR #34 fixes config.json for OpenLane2 GDS build.
+>
+> The active **TTSKY26b TRIP FIRE** triad uses three sacred-constant neurons:
+>
+> - **φ-anchor** → [tt-trinity-phi](https://github.com/gHashTag/tt-trinity-phi)
+> - **e-engine** → [tt-trinity-euler](https://github.com/gHashTag/tt-trinity-euler)
+> - **γ-surface** → [tt-trinity-gamma](https://github.com/gHashTag/tt-trinity-gamma)
+
+
 # 🌌 Quantum Brain HOLOGRAPHIC — Edition III
 
 **tt_um_qbrain_holo · TTSKY26c · 1×2 tile · 16 PE × 2 MAC · Multi-Die D2D Mesh · R-marker Open Slots**
